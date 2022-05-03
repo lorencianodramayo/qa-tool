@@ -1,0 +1,108 @@
+.Adlib {
+    background: url("../../images/background.svg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    min-height: 100vh;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    padding: 2em 0;
+    display: flex;
+
+    .container {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: inherit;
+
+        .steps {
+            box-shadow: 3px 3px 20px 2px rgb(45 43 43 / 28%);
+            min-height: 73vh;
+
+            .ant-card-head {
+                margin: 0px;
+                -webkit-text-fill-color: transparent;
+                -moz-text-fill-color: transparent;
+                background-clip: text;
+                -webkit-background-clip: text;
+                -moz-background-clip: text;
+                background-image: linear-gradient(325deg,#e0238c,#f22076 47.43%,#f96666);
+                background-size: 100%;
+                color: #29125f;
+                word-break: break-word;
+                z-index: 3;
+                font-weight: 800;
+                font-size: 24px;
+            }
+
+            .ant-card-body {
+                .steps-content {
+                    margin: 1em 0;
+                    min-height: calc(100vh - 412px);
+                    .ant-card-body{
+                        height: inherit;
+                        .template-list{
+                            height: -webkit-fill-available;
+                        }
+
+                        .Verify{
+                            .verify-empty{
+                                min-height: calc(100vh - 462px);
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                            }
+
+                            .content{
+                                .iframe{
+                                    height: 300px;
+                                    width: 300px;
+                                    overflow: hidden;
+                                    background: #f7f7f7;
+                                    position: relative;
+                                    float: right;
+                                    border: solid 1px #ececec;
+                                
+                                    iframe{
+                                        border:0;
+                                        position: absolute;
+                                        top: 50%;
+                                        left: 50%;
+                                        transform-origin: 0 0;
+                                    }
+
+                                    .vertical{
+                                        transform: scale(0.425) translate(-50%, -50%);
+                                    }
+
+                                    .horizontal{
+                                        transform: scale(0.275) translate(-50%, -50%);
+                                    }
+                                }
+                                
+                                .ant-divider-horizontal{
+                                    margin: 10px 0;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                .steps-action{
+                    .button-right{
+                        display: flex;
+                        justify-content: flex-end;
+                    }
+                }
+
+                .ant-select-selection-item{
+                    padding: 0;
+                }
+            }
+        }
+    }
+}
