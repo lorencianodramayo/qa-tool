@@ -27,6 +27,9 @@ exports.saveData = async (url, conceptId, uniqueId, origin) => {
 
         const validate = await Promise.all(zip.getEntries().map(async (entry) => {
             if (!entry.isDirectory) {
+                let count = 0,
+                    indexList = 0;
+                
                 if (entry.name === 'index.html') {
                     //injecting library.js
                     entry.setData(Buffer.from(
@@ -39,14 +42,26 @@ exports.saveData = async (url, conceptId, uniqueId, origin) => {
                 }
 
                 //gcp bucket
-                const saveFile = await bucket
-                    .file(`${conceptId}/${uniqueId}/${entry.entryName}`)
+                let file = bucket.file(
+                    `${conceptId}/${uniqueId}/${entry.entryName}`
+                );
+
+                //filestore
+                let saveFile = await file
                     .createWriteStream()
                     .on("error", (err) => err)
-                    .on("finish", () => { })
+                    .on("finish", () => { 
+                        if (file.name.includes("index.html")) {
+                            indexList = 1;
+                        }
+                        count++;
+                    })
                     .end(entry.getData());
-
-                return saveFile;
+                
+                //counting conditions
+                if (count === zip.getEntries().length - 1 && indexList !== 0) {
+                    return saveFile;
+                }
             }
         }));
 
