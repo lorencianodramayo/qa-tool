@@ -39,4 +39,12 @@ router.post("/saveData", async (req, res) => {
     }
 });
 
+router.get("/getData", (req, res) => {
+  PlaygroundModel.findById(req.query.id, (err, success) => {
+    return err
+      ? res.status(500).json({ msg: "Sorry, Internal server error" })
+      : res.json(success);
+  }).sort([["_id", 1]]);
+});
+
 module.exports = router;

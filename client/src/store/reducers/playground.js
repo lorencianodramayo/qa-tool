@@ -5,7 +5,8 @@ const initialState = {
     id: null,
     isLoading: false,
     isDisabled: false,
-    error: null
+    error: null,
+    default: {}
 }
 
 const playground = createSlice(
@@ -35,12 +36,19 @@ const playground = createSlice(
                 state.isLoading = false;
                 state.isDisabled = false;
             },
+            setPlaygroundDefault: (state, { payload }) => {
+                console.log(payload);
+                state.isLoading = false;
+                state.isDisabled = false;
+                state.default = payload;
+            }
         }
     }
 );
 
 export const {
     setPlaygroundStart,
+    setPlaygroundDefault,
     isPlaygroundSuccess,
     isPlaygroundError
 } = playground.actions;

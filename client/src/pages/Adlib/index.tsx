@@ -54,7 +54,6 @@ const Adlib: FC = () => {
     };
 
     const completed = async () => {
-        console.log("clicked")
         dispatch(setPlaygroundStart());
         
         const { status: playgroundStatus, data: playgroundList, message: playgroundError } = await savePlayground(

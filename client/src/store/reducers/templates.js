@@ -30,7 +30,6 @@ const template = createSlice(
                 state.isLoading = false;
             },
             setTemplateVersions: (state, { payload }) => {
-                console.log("here")
                 state.initialValues[payload.key] = payload.value;
                 state.data = state.selectedIds.map((data) => state.initialValues[data]);
 
