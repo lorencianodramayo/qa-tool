@@ -37,7 +37,6 @@ const playground = createSlice(
                 state.isDisabled = false;
             },
             setPlaygroundDefault: (state, { payload }) => {
-                console.log(payload);
                 state.isLoading = false;
                 state.isDisabled = false;
                 state.default = payload;

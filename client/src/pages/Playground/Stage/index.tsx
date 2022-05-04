@@ -1,7 +1,8 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 const Stage: FC = () => {
+    const [key, setKey] = useState(0);
     const {
         data: playgroundData,
         isLoading: playgroundLoading,
@@ -9,15 +10,17 @@ const Stage: FC = () => {
     } = useSelector((state: any) => state.playground);
 
     useEffect(() => {
-        console.log(playgroundData);
-        console.log(playgroundDefault);
-    })
-    
+        setKey(key + 1);
+        
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     return (
         <div>
             {
                 playgroundDefault.size !== undefined && !playgroundLoading ? 
                     <iframe
+                        key={key}
                         title={`${playgroundDefault.size}-${playgroundDefault.name}`}
                         width={playgroundDefault.size.split("x")[0]}
                         height={playgroundDefault.size.split("x")[1]}

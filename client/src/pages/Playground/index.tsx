@@ -1,10 +1,11 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Layout, Menu, PageHeader, Select, Button, Spin, Skeleton } from 'antd';
+import { Layout, Menu, PageHeader, Select, Button, Spin, Skeleton, Drawer } from 'antd';
 import { BarsOutlined, InfoCircleOutlined } from '@ant-design/icons';
 
 //children
 import Stage from './Stage';
+import Dynamic from './Dynamic';
 
 //services
 import { getPlayground } from '../../services/api/playground';
@@ -25,6 +26,7 @@ const { Option } = Select;
 
 
 const Playground: FC = () => {
+    const [close, setClose] = useState(false);
     const dispatch = useDispatch();
     const { id } = useParams();
 
@@ -53,6 +55,10 @@ const Playground: FC = () => {
         setTimeout(() => {
             dispatch(setPlaygroundDefault(playgroundData.templates.filter((temp: any) => temp._id === e)[0]));
         }, 500);
+    }
+
+    const onClose = () => {
+        setClose(!close);
     }
 
     return (
@@ -102,15 +108,27 @@ const Playground: FC = () => {
                                     })
                                 }
                             </Select> : <Skeleton.Input key="skeleton-dimensions" active={true} size={"default"} />,
-                        <Button key="dynamicElements" loading={playgroundLoading} type="primary" icon={<BarsOutlined />} />
+                        <Button onClick={onClose} key="dynamicElements" loading={playgroundLoading} type="primary" icon={<BarsOutlined />} />
                     ]
                 }
             >
                 <Spin tip="Loading..." spinning={playgroundLoading}>
                     <Content className="Stage">
-                        <Stage />
+                        {
+                            playgroundDefault._id !== undefined ? <Stage /> : null
+                        }
                     </Content>
                 </Spin>
+                <Drawer
+                    title={`${playgroundDefault.dynamicElements !== undefined ? playgroundDefault.dynamicElements.length : <Skeleton.Input active={true} size={"default"} />} Dynamic Elements`}
+                    placement="right"
+                    closable={false}
+                    onClose={onClose}
+                    visible={close}
+                    maskStyle={{background: "transparent"}}
+                >
+                    <Dynamic />
+                </Drawer>
             </PageHeader>
 
         </Layout>
