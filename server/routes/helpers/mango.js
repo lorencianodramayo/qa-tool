@@ -18,6 +18,8 @@ const storage = new Storage({
 const bucket = storage.bucket(process.env.GCS_BUCKET);
 
 exports.saveData = async (url, conceptId, uniqueId, origin) => {
+    var count = 0,
+      indexList = 0;
     try {
         const response = await axios.get(url, {
             responseType: 'arraybuffer',
@@ -27,9 +29,6 @@ exports.saveData = async (url, conceptId, uniqueId, origin) => {
 
         const validate = await Promise.all(zip.getEntries().map(async (entry) => {
             if (!entry.isDirectory) {
-                let count = 0,
-                    indexList = 0;
-                
                 if (entry.name === 'index.html') {
                     //injecting library.js
                     entry.setData(Buffer.from(
