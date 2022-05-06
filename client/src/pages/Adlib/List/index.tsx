@@ -51,7 +51,9 @@ const List: FC = () => {
                     templateVersions: data.templateVersions
                 } : null
 
-        }).filter((el:any) => el != null)
+        }).sort((a: any, b: any) => Number(a.size.split("x")[1]) < Number(b.size.split("x")[1]) ? -1 : 0)
+        .sort((a: any, b: any) => Number(a.size.split("x")[0]) < Number(b.size.split("x")[0]) ? -1 : 0)
+        .filter((el:any) => el != null)
 
         setData(result);
         form.setFieldsValue(initialValues);
@@ -77,7 +79,9 @@ const List: FC = () => {
                     value: data.size,
                     ch: data.suitableChannels.includes(channelSelected) ? true : false
                 }
-            }).filter((value:any, index:any, self:any) =>  self.findIndex((v: any) => v.text === value.text && v.value === value.value && v.ch === true) === index),
+            }).sort((a: any, b: any) => Number(a.text.split("x")[1]) < Number(b.text.split("x")[1]) ? -1 : 0)
+                .sort((a: any, b: any) => Number(a.text.split("x")[0]) < Number(b.text.split("x")[0]) ? -1 : 0)
+                .filter((value:any, index:any, self:any) =>  self.findIndex((v: any) => v.text === value.text && v.value === value.value && v.ch === true) === index),
             onFilter: (value:any, record:any) => record.size.indexOf(value) === 0,
             filterSearch: true,
             key: 'size',

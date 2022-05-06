@@ -4,16 +4,15 @@ import { Skeleton, Form, Input } from "antd";
 import { useSelector } from "react-redux";
 
 const Dynamic: FC = () => {
-    const [form] = Form.useForm();
-
     const {
         default: playgroundDefault,
     } = useSelector((state: any) => state.playground);
 
     useEffect(() => {
-        if(playgroundDefault.defaultDynamicFieldsValues !== undefined){
-            form.setFieldsValue(playgroundDefault.defaultDynamicFieldsValues);
-        } 
+        // console.log("here")
+        // if(playgroundDefault.defaultDynamicFieldsValues !== undefined){
+        //     form.setFieldsValue(playgroundDefault.defaultDynamicFieldsValues);
+        // } 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     },[]);
 
@@ -21,10 +20,7 @@ const Dynamic: FC = () => {
         <div>
             {
                 playgroundDefault.dynamicElements !== undefined ? 
-                <Form
-                    form={form}
-                    layout="vertical"
-                >
+                <>
                     {
                         playgroundDefault.dynamicElements.map((data: any, index: number) => {
                             return (
@@ -34,7 +30,7 @@ const Dynamic: FC = () => {
                             )
                         })
                     }
-                </Form>
+                </>
                 : <Skeleton.Input active={true} size={"default"} />
 
             }

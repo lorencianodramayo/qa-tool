@@ -93,7 +93,10 @@ const Verify: FC = () => {
                         accordion 
                     >
                         {
-                            verifyVersions.map((data: any, index: number) => {
+                            [...verifyVersions]
+                                .sort((a: any, b: any) => Number(a.size.split("x")[1]) < Number(b.size.split("x")[1]) ? -1 : 0)
+                                .sort((a: any, b: any) => Number(a.size.split("x")[0]) < Number(b.size.split("x")[0]) ? -1 : 0)
+                                .map((data: any, index: number) => {
                                 return (
                                     <Panel header={data.size} key={index} extra={<Tag color="purple">{data.name}</Tag>}>
                                         <Row>

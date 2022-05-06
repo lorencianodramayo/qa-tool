@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Layout, Menu, PageHeader, Select, Button, Spin, Skeleton, Drawer } from 'antd';
+import { Layout, Menu, PageHeader, Select, Button, Spin, Skeleton, Drawer, Form } from 'antd';
 import { BarsOutlined, InfoCircleOutlined } from '@ant-design/icons';
 
 //children
@@ -26,6 +26,7 @@ const { Option } = Select;
 
 
 const Playground: FC = () => {
+    const [form] = Form.useForm();
     const [close, setClose] = useState(false);
     const dispatch = useDispatch();
     const { id } = useParams();
@@ -41,10 +42,14 @@ const Playground: FC = () => {
         const { status: playgroundStatus, data: playgroundList, message: playgroundError } = await getPlayground({ id });
 
         dispatch(playgroundStatus === 200 ? isPlaygroundSuccess(playgroundList) : isPlaygroundError(playgroundError));
-        dispatch(playgroundStatus === 200 ? setPlaygroundDefault(playgroundList.templates[0]) : isPlaygroundError(playgroundError));
+        dispatch(playgroundStatus === 200 ? setPlaygroundDefault([...playgroundList.templates].sort((a: any, b: any) => Number(a.size.split("x")[1]) < Number(b.size.split("x")[1]) ? -1 : 0)
+            .sort((a: any, b: any) => Number(a.size.split("x")[0]) < Number(b.size.split("x")[0]) ? -1 : 0)[0]) : isPlaygroundError(playgroundError));
     }
 
     useEffect(() => {
+        if (playgroundDefault.defaultDynamicFieldsValues !== undefined) {
+            form.setFieldsValue(playgroundDefault.defaultDynamicFieldsValues);
+        } 
         load();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -54,6 +59,8 @@ const Playground: FC = () => {
         dispatch(setPlaygroundStart());
         setTimeout(() => {
             dispatch(setPlaygroundDefault(playgroundData.templates.filter((temp: any) => temp._id === e)[0]));
+        
+            form.setFieldsValue(playgroundData.templates.filter((temp: any) => temp._id === e)[0].defaultDynamicFieldsValues);
         }, 500);
     }
 
@@ -62,7 +69,6 @@ const Playground: FC = () => {
     }
 
     return (
-
         <Layout className="Playground">
             <Header>
                 <Link to="/">
@@ -103,7 +109,8 @@ const Playground: FC = () => {
                         playgroundDefault._id !== undefined ?
                             <Select key="dimensions" defaultValue={playgroundDefault._id} style={{ width: 150 }} loading={playgroundLoading} onChange={(e: any) => onChange(e) }>
                                 {
-                                    playgroundData.templates && playgroundData.templates.map((data: any, index: number) => {
+                                    playgroundData.templates && [...playgroundData.templates].sort((a: any, b: any) => Number(a.size.split("x")[1]) < Number(b.size.split("x")[1]) ? -1 : 0)
+                                        .sort((a: any, b: any) => Number(a.size.split("x")[0]) < Number(b.size.split("x")[0]) ? -1 : 0).map((data: any, index: number) => {
                                         return <Option key={index} value={data._id}>{data.size}</Option>
                                     })
                                 }
@@ -127,7 +134,12 @@ const Playground: FC = () => {
                     visible={close}
                     maskStyle={{background: "transparent"}}
                 >
-                    <Dynamic />
+                    <Form
+                        form={form}
+                        layout="vertical"
+                    >
+                        <Dynamic />
+                    </Form>
                 </Drawer>
             </PageHeader>
 

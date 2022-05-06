@@ -18,8 +18,6 @@ const storage = new Storage({
 const bucket = storage.bucket(process.env.GCS_BUCKET);
 
 exports.saveData = async (url, conceptId, uniqueId, origin) => {
-    var count = 0,
-      indexList = 0;
     try {
         const response = await axios.get(url, {
             responseType: 'arraybuffer',
@@ -41,26 +39,18 @@ exports.saveData = async (url, conceptId, uniqueId, origin) => {
                 }
 
                 //gcp bucket
-                let file = bucket.file(
-                    `${conceptId}/${uniqueId}/${entry.entryName}`
-                );
+                // const saveFile = 
+                //     await bucket
+                //         .file(`${conceptId}/${uniqueId}/${entry.entryName}`)
+                //         .createWriteStream()
+                //         .on("error", (err) => err)
+                //         .on("finish", () => { })
+                //         .end(await entry.getData());
 
-                //filestore
-                let saveFile = await file
-                    .createWriteStream()
-                    .on("error", (err) => err)
-                    .on("finish", () => { 
-                        if (file.name.includes("index.html")) {
-                            indexList = 1;
-                        }
-                        count++;
-                    })
-                    .end(entry.getData());
-                
-                //counting conditions
-                if (count === zip.getEntries().length - 1 && indexList !== 0) {
-                    return saveFile;
-                }
+                //return saveFile;
+                uploadFile(
+                  `${conceptId}/${uniqueId}/${entry.entryName}`, entry.getData()
+                ).catch(console.error);
             }
         }));
 
@@ -69,3 +59,14 @@ exports.saveData = async (url, conceptId, uniqueId, origin) => {
         return err;
     }
 };
+
+async function uploadFile(filePath, data) {
+  await bucket
+          .file(filePath)
+          .createWriteStream()
+          .on("error", (err) => err)
+          .on("finish", () => {
+            console.log(`done: ${filePath}`);
+           })
+          .end(data);
+}
