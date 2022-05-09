@@ -3,12 +3,15 @@ import { Link, useParams } from 'react-router-dom';
 import { Layout, Menu, PageHeader, Select, Button, Spin, Skeleton, Drawer, Form } from 'antd';
 import { BarsOutlined, InfoCircleOutlined } from '@ant-design/icons';
 
+//reusable
+import Affix from '../../components/Affix';
+
 //children
 import Stage from './Stage';
 import Dynamic from './Dynamic';
 
 //services
-import { getPlayground } from '../../services/api/playground';
+import { getCreatives, getPlayground } from '../../services/api/playground';
 
 //redux
 import { useDispatch, useSelector } from 'react-redux';
@@ -39,28 +42,44 @@ const Playground: FC = () => {
 
     const load = async () => {
         dispatch(setPlaygroundStart());
-        const { status: playgroundStatus, data: playgroundList, message: playgroundError } = await getPlayground({ id });
+        const { status: playgroundStatus, data: playgroundList} = await getPlayground({ id });
 
-        dispatch(playgroundStatus === 200 ? isPlaygroundSuccess(playgroundList) : isPlaygroundError(playgroundError));
-        dispatch(playgroundStatus === 200 ? setPlaygroundDefault([...playgroundList.templates].sort((a: any, b: any) => Number(a.size.split("x")[1]) < Number(b.size.split("x")[1]) ? -1 : 0)
-            .sort((a: any, b: any) => Number(a.size.split("x")[0]) < Number(b.size.split("x")[0]) ? -1 : 0)[0]) : isPlaygroundError(playgroundError));
+        if(playgroundStatus === 200){
+            const result = await Promise.all(playgroundList.templateId.map(async (templateId: string) => {
+                const { status: creativeStatus, data: creativeList, message: creativeError } = await getCreatives({ templateId });
+                
+                return creativeStatus === 200 ? creativeList : creativeError;
+            }));
+
+            if(result.length > 0){
+                dispatch(isPlaygroundSuccess(result));
+                dispatch(setPlaygroundDefault({
+                    baseUrl: result[0].baseUrl,
+                    template: result[0].template
+                }));
+
+                form.setFieldsValue(result[0].template.defaultDynamicFieldsValues);
+            }else{
+                dispatch(isPlaygroundError({message: "ERROR!"}))
+            }
+        }
     }
 
     useEffect(() => {
-        if (playgroundDefault.defaultDynamicFieldsValues !== undefined) {
-            form.setFieldsValue(playgroundDefault.defaultDynamicFieldsValues);
-        } 
         load();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const onChange = (e:any) => {
-        dispatch(setPlaygroundDefault({}));
+        //dispatch(setPlaygroundDefault({}));
         dispatch(setPlaygroundStart());
         setTimeout(() => {
-            dispatch(setPlaygroundDefault(playgroundData.templates.filter((temp: any) => temp._id === e)[0]));
+            dispatch(setPlaygroundDefault({
+                baseUrl: playgroundData.filter((temp: any) => temp.template._id === e)[0].baseUrl,
+                template: playgroundData.filter((temp: any) => temp.template._id === e)[0].template
+            }));
         
-            form.setFieldsValue(playgroundData.templates.filter((temp: any) => temp._id === e)[0].defaultDynamicFieldsValues);
+            form.setFieldsValue(playgroundData.filter((temp: any) => temp.template._id === e)[0].template.defaultDynamicFieldsValues);
         }, 500);
     }
 
@@ -109,9 +128,8 @@ const Playground: FC = () => {
                         playgroundDefault._id !== undefined ?
                             <Select key="dimensions" defaultValue={playgroundDefault._id} style={{ width: 150 }} loading={playgroundLoading} onChange={(e: any) => onChange(e) }>
                                 {
-                                    playgroundData.templates && [...playgroundData.templates].sort((a: any, b: any) => Number(a.size.split("x")[1]) < Number(b.size.split("x")[1]) ? -1 : 0)
-                                        .sort((a: any, b: any) => Number(a.size.split("x")[0]) < Number(b.size.split("x")[0]) ? -1 : 0).map((data: any, index: number) => {
-                                        return <Option key={index} value={data._id}>{data.size}</Option>
+                                    playgroundData && playgroundData.map((data: any, index: number) => {
+                                        return <Option key={index} value={data.template._id}>{data.template.size}</Option>
                                     })
                                 }
                             </Select> : <Skeleton.Input key="skeleton-dimensions" active={true} size={"default"} />,
@@ -127,6 +145,7 @@ const Playground: FC = () => {
                     </Content>
                 </Spin>
                 <Drawer
+                    forceRender 
                     title={`${playgroundDefault.dynamicElements !== undefined ? playgroundDefault.dynamicElements.length : <Skeleton.Input active={true} size={"default"} />} Dynamic Elements`}
                     placement="right"
                     closable={false}
@@ -137,10 +156,12 @@ const Playground: FC = () => {
                     <Form
                         form={form}
                         layout="vertical"
+                        name="dynamic-form"
                     >
                         <Dynamic />
                     </Form>
                 </Drawer>
+                <Affix />
             </PageHeader>
 
         </Layout>

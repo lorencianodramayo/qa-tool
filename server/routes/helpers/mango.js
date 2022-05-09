@@ -18,14 +18,18 @@ const storage = new Storage({
 const bucket = storage.bucket(process.env.GCS_BUCKET);
 
 exports.saveData = async (url, conceptId, uniqueId, origin) => {
-    try {
-        const response = await axios.get(url, {
-            responseType: 'arraybuffer',
-        });
+    var pendingPromises = [],
+        counter = 0,
+        isIndexUploaded = false;
 
-        const zip = new AdmZip(response.data);
+    const response = await axios.get(url, {
+        responseType: 'arraybuffer',
+    }).catch((err) => console.log(err.response.data));
 
-        const validate = await Promise.all(zip.getEntries().map(async (entry) => {
+    const zip = new AdmZip(response.data);
+
+     zip.getEntries().map(async (entry) => {
+        pendingPromises.push(new Promise((resolve, reject) => {
             if (!entry.isDirectory) {
                 if (entry.name === 'index.html') {
                     //injecting library.js
@@ -37,36 +41,28 @@ exports.saveData = async (url, conceptId, uniqueId, origin) => {
                             .join(`<script src="${origin}lib.js"></script></html>`)
                         , "utf8"));
                 }
-
-                //gcp bucket
-                // const saveFile = 
-                //     await bucket
-                //         .file(`${conceptId}/${uniqueId}/${entry.entryName}`)
-                //         .createWriteStream()
-                //         .on("error", (err) => err)
-                //         .on("finish", () => { })
-                //         .end(await entry.getData());
-
-                //return saveFile;
-                uploadFile(
-                  `${conceptId}/${uniqueId}/${entry.entryName}`, entry.getData()
-                ).catch(console.error);
             }
+
+            //gcp bucket
+            bucket
+                .file(`${conceptId}/${uniqueId}/${entry.entryName}`)
+                .createWriteStream()
+                .on("error", (err) => err)
+                .on("finish", () => { 
+                    counter++;
+                    if(file.name.includes('index.html')){
+                        isIndexUploaded = true;
+                    }
+
+                    if(isIndexUploaded && counter === zip.getEntries().length - 1){
+                        resolve("OK")
+                    }
+                })
+                .end(entry.getData());
         }));
+    });
 
-        return validate;
-    } catch (err) {
-        return err;
-    }
+    Promise.all(pendingPromises)
+        .then(imagePaths => console.log(imagePaths)) 
+        .catch(() => console.log('well that didnt work...'))
 };
-
-async function uploadFile(filePath, data) {
-  await bucket
-          .file(filePath)
-          .createWriteStream()
-          .on("error", (err) => err)
-          .on("finish", () => {
-            console.log(`done: ${filePath}`);
-           })
-          .end(data);
-}

@@ -5,6 +5,7 @@ import partnerReducer from "./partner";
 import playgroundReducer from "./playground";
 import templateReducer from "./templates";
 import verifyReducer from "./verify";
+import settingsReducer from "./settings";
 
 const rootReducer = combineReducers({
     partner: partnerReducer,
@@ -12,7 +13,8 @@ const rootReducer = combineReducers({
     channel: channelReducer,
     template: templateReducer,
     verify: verifyReducer,
-    playground: playgroundReducer
+    playground: playgroundReducer,
+    settings: settingsReducer
 });
 
 export default rootReducer;

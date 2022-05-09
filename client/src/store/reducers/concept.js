@@ -28,7 +28,7 @@ const concept = createSlice(
                 state.data = payload;
                 state.isLoading = false;
                 
-                state.isDisabled = payload.length !== undefined? false : true;
+                state.isDisabled = payload.length !== undefined && payload.length !== 0? false : true;
             },
             isConceptError: (state, { payload }) => {
                 state.error = payload;

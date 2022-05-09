@@ -79,8 +79,8 @@ const Info: FC = () => {
                 dispatch(getConceptStart());
 
                 const { status: conceptStatus, data: conceptList, message: conceptError } = await requestConcept(Object.values(e)[0]);
-
-                dispatch(conceptStatus === 200 ? isConceptSuccess(conceptList) : isConceptError(conceptError));
+                
+                dispatch(conceptStatus === 200 ? isConceptSuccess(Object.keys(conceptList)[0] !== "error" ? conceptList.filter((item: any ) => !item.archived) : conceptList) : isConceptError(conceptError));
                 dispatch(setPartnerSelected(Object.values(e)[0]));
             break;
             case 'Concept':
@@ -149,8 +149,9 @@ const Info: FC = () => {
                                                     concepts.length > 0 ?
                                                         concepts.map(
                                                             (concept: any, index: number) => 
-                                                                <Option value={concept._id} key={index}>{concept.name}</Option>
-                                                        )
+                                                                !concept.archived ?
+                                                                <Option value={concept._id} key={index}>{concept.name}</Option> : null
+                                                        ).sort((a: any, b: any) => a.name < b.name ? -1 : 0)
                                                     :null
                                                 : channels.length > 0 ?
                                                     channels.map(

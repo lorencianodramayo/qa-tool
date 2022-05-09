@@ -21,7 +21,6 @@ const verify = createSlice(
                 state.isLoading = false;
             },
             isVerifySuccess: (state, { payload }) => {
-                console.log(payload);
                 const item = state.data.find(item => item._id === payload._id);
                if(item === undefined) {
                    state.data.push(payload);

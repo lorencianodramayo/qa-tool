@@ -28,6 +28,7 @@
                 align-items: center;
                 justify-content: center;
                 background-color: rgb(0 0 0 / 0%);
+                padding: 1em;
             }
         }
     }
@@ -37,4 +38,80 @@
 .ant-spin-nested-loading > div > .ant-spin{
     max-height: 100% !important;
     background-color: #673ab773 !important;
+}
+
+.affix{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    margin: 1.5em;
+}
+
+.affix-over{
+    .ant-popover-inner{
+        box-shadow: none;
+        .ant-popover-inner-content{
+            padding: 0.3em 0;
+        }
+    }
+}
+
+.image-items{
+    margin-bottom: 0 !important;
+    .ant-form-item-control{
+        display: none;
+    }
+}
+
+.buttonImage{
+    margin-bottom: 24px;
+    align-items: center;
+    height: 5em !important;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0 !important;
+    width: 5em;
+    .ant-image{
+        position: relative;
+        align-items: center;
+        display: flex;
+        height: -webkit-fill-available;
+        overflow: hidden;
+        width: -webkit-fill-available;
+        justify-content: center;
+
+        img{
+            width: auto;
+            height: 100%;
+            vertical-align: middle;
+        }
+    }
+}
+
+.Frame {
+    box-shadow: 0 0 10px 0 #aaa;
+    .controls{
+        background: #ffffffb8;
+        //padding: 0.5em 1em;
+        padding: 0.1em;
+        border: 1px solid rgb(255 255 255 / 24%);
+        margin-top: -6px;
+        color: #fff;
+    }
+}
+
+.ant-collapse{
+    margin-bottom: 1em !important;
+    .language-settings{
+        .ant-collapse-header{
+            padding: 0 !important;    
+            .ant-row{
+                width: 100%;
+                .ant-col{
+                    display: flex;
+                    align-items: center;
+                }
+            }
+        }
+    }
 }

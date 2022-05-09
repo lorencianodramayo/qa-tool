@@ -35,6 +35,7 @@ const List: FC = () => {
     useEffect(() => {
        dispatch(getTemplateStart());
         const result = templates.map((data: any, index: number) => {
+            console.log(data)
             if(Object.keys(initialValues).indexOf(`${data.size}-${data._id}`) < 0) {
                 dispatch(setTemplateVersions({
                     key:[`${data.size}-${data._id}`],
@@ -42,7 +43,7 @@ const List: FC = () => {
                 }));
             }
 
-            return data.suitableChannels.includes(channelSelected) ?
+            return data.suitableChannels.includes(channelSelected) && !data.archived ?
                 {
                     id: `${data.size}-${data._id}`,
                     key: index,
@@ -51,8 +52,9 @@ const List: FC = () => {
                     templateVersions: data.templateVersions
                 } : null
 
-        }).sort((a: any, b: any) => Number(a.size.split("x")[1]) < Number(b.size.split("x")[1]) ? -1 : 0)
-        .sort((a: any, b: any) => Number(a.size.split("x")[0]) < Number(b.size.split("x")[0]) ? -1 : 0)
+        })
+        //.sort((a: any, b: any) => Number(a.size.split("x")[1]) < Number(b.size.split("x")[1]) ? -1 : 0)
+        //.sort((a: any, b: any) => Number(a.size.split("x")[0]) < Number(b.size.split("x")[0]) ? -1 : 0)
         .filter((el:any) => el != null)
 
         setData(result);

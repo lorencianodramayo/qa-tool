@@ -10,8 +10,9 @@ import { steps } from '../../helpers/steps';
 
 //styles
 import '../../assets/less/Adlib/custom.less';
-import { isPlaygroundError, isPlaygroundSuccess, setPlaygroundStart } from '../../store/reducers/playground';
+import { isPlaygroundError, setPlaygroundStart } from '../../store/reducers/playground';
 import { savePlayground } from '../../services/api/playground';
+import { saveTemplate } from '../../services/api/template';
 
 //ant spread
 const { Step } = Steps;
@@ -55,19 +56,30 @@ const Adlib: FC = () => {
 
     const completed = async () => {
         dispatch(setPlaygroundStart());
-        
-        const { status: playgroundStatus, data: playgroundList, message: playgroundError } = await savePlayground(
-            {
-                partnerId: partnerSelected,
-                conceptId: conceptSelected,
-                templates: verifyVersions
-            }
-        );
 
-        dispatch(playgroundStatus === 200 ? isPlaygroundSuccess(playgroundList) : isPlaygroundError(playgroundError));
+
+        const templateValidate = await Promise.all(verifyVersions.map( async (template: any) => {
+            const { status: templateStatus, data: templateList, message: templateError } = await saveTemplate({
+                template,
+                conceptId: conceptSelected
+            });
+
+            return templateStatus === 200 ? templateList._id : templateError; 
+        }));
         
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        playgroundStatus === 200 ? navigate(`/playground/${playgroundList._id}`) : null;
+        if(verifyVersions.length === templateValidate.length){
+            const { status: playgroundStatus, data: playgroundList, message: playgroundError } = await savePlayground({
+                partnerId: partnerSelected,
+                templateId: templateValidate
+            });
+            console.log(templateValidate);
+            if(playgroundStatus === 200){
+                navigate(`/playground/${playgroundList._id}`);
+            }else{
+                dispatch(isPlaygroundError(playgroundError));
+            }
+            
+        }
     }
 
     return (

@@ -1,32 +1,47 @@
 import React, { FC, useEffect, useState } from 'react';
+//redux
 import { useSelector } from 'react-redux';
+//components
+import Controls from '../../../components/Controls';
+import Iframe from '../../../components/Iframe';
 
 const Stage: FC = () => {
     const [key, setKey] = useState(0);
     const {
-        data: playgroundData,
         isLoading: playgroundLoading,
         default: playgroundDefault,
+        baseUrl
     } = useSelector((state: any) => state.playground);
 
     useEffect(() => {
         setKey(key + 1);
-        
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    useEffect(() => {
+        // componentWillUnmount
+        return () => {
+           // Your code here
+           console.log("unmounted!")
+        }
+      }, []);
+
     return (
-        <div>
+        <div className="Frame">
             {
                 playgroundDefault.size !== undefined && !playgroundLoading ? 
-                    <iframe
-                        key={key}
-                        title={`${playgroundDefault.size}-${playgroundDefault.name}`}
-                        width={playgroundDefault.size.split("x")[0]}
-                        height={playgroundDefault.size.split("x")[1]}
-                        frameBorder={0}
-                        src={`${playgroundData.baseUrl}/${playgroundDefault.size}-${playgroundDefault.name}/index.html`}
-                    /> : null
+                    <>
+                        <Iframe 
+                            key={key}
+                            keyFrame={key}
+                            title={`${playgroundDefault.size}-${playgroundDefault.name}`}
+                            width={playgroundDefault.size.split("x")[0]}
+                            height={playgroundDefault.size.split("x")[1]}
+                            source={`${baseUrl}/${playgroundDefault.size}-${playgroundDefault.name}/index.html`}
+                        />
+                        <Controls /> 
+                    </>
+                    : null
             }
         </div>
     );

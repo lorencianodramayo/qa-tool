@@ -7,3 +7,7 @@ export const requestTemplateVersion = (templateId, partnerId) => api.callGet('/a
         token: getToken()
     }
 });
+
+export const saveTemplate = (params) => api.callPost('/graham/saveTemplate', {
+    params
+})

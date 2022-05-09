@@ -6,6 +6,7 @@ const initialState = {
     isLoading: false,
     isDisabled: false,
     error: null,
+    baseUrl: null,
     default: {}
 }
 
@@ -39,7 +40,8 @@ const playground = createSlice(
             setPlaygroundDefault: (state, { payload }) => {
                 state.isLoading = false;
                 state.isDisabled = false;
-                state.default = payload;
+                state.default = payload.template;
+                state.baseUrl = payload.baseUrl;
             }
         }
     }
